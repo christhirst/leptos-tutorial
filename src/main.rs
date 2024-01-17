@@ -1,41 +1,23 @@
 use leptos::*;
+use leptos_router::*;
 
 fn main() {
-    leptos::mount_to_body(|| view! { <App/> })
+    leptos::mount_to_body(App)
 }
 
 #[component]
-fn App() -> impl IntoView {
-    let (count, set_count) = create_signal(0);
-    let double_count = MaybeSignal::derive(move || count() * 2);
-    let html = "<p>This HTML will be injected.</p>";
+pub fn App() -> impl IntoView {
     view! {
-        <button
-            on:click=move |_| {
-                set_count.update(|n| *n += 1);
-            }
+        <Router>
+            <nav></nav>
+            // all our routes will appear inside <main>
+            <main>
+                <Routes>
 
-            // the class: syntax reactively updates a single class
-            // here, we'll set the `red` class when `count` is odd
-            class:red=move || count() % 2 == 1
-        >
-            "Click me"
-        </button>
-        // now we use our component!
-        <ProgressBar progress=count/>
-        // use `Signal::derive()` to wrap a derived signal
-        <ProgressBar progress=Signal::derive(double_count)/>
+                    <Route path="/*any" view=|| view! { <h1>"Not Found"</h1> }/>
+                </Routes>
 
-        <h1>{double_count}</h1>
-        <div inner_html=html></div>
+            </main>
+        </Router>
     }
-}
-
-/// Shows progress toward a goal.
-#[component]
-fn ProgressBar(
-    #[prop(default = 100)] max: u16,
-    #[prop(into)] progress: Signal<i32>,
-) -> impl IntoView {
-    view! { <progress max=max value=progress></progress> }
 }
